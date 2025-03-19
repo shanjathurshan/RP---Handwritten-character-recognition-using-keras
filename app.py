@@ -6,6 +6,9 @@ from keras.models import load_model
 import os
 from werkzeug.utils import secure_filename
 
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 app = Flask(__name__)
 
 # Load trained model
@@ -25,7 +28,7 @@ label_dictionary = {
 # Image Preprocessing Function
 def preprocess_image(image_path):
     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    img = cv2.resize(img, (28, 28))
+    img = cv2.resize(img, (28, 28), interpolation=cv2.INTER_AREA)
     img = cv2.bitwise_not(img)  # Invert colors if needed
     img = img.astype("float32") / 255.0
     img = img.reshape(1, 28, 28, 1)
