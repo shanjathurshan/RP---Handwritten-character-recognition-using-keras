@@ -6,8 +6,11 @@ from keras.models import load_model
 import os
 from werkzeug.utils import secure_filename
 
-os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+# os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"  # Disable oneDNN optimizations
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Suppress unnecessary logs
 
 app = Flask(__name__)
 
