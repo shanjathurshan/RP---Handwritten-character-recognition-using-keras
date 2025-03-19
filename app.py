@@ -5,6 +5,10 @@ from flask import Flask, request, jsonify
 import numpy as np
 import cv2
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TensorFlow to use CPU
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"  # Disable oneDNN optimizations
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Suppress TensorFlow logs
+
 # 🔥 GitHub URL where your model is hosted (Replace with your actual URL)
 GITHUB_MODEL_URL = "https://github.com/shanjathurshan/handwritten-character-recognition/releases/download/v1.0/my_model.h5"
 LOCAL_MODEL_PATH = "/tmp/my_model.h5"  # Railway uses /tmp for temp storage
