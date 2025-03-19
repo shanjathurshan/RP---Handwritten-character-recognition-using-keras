@@ -13,22 +13,22 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Suppress TensorFlow logs
 GITHUB_MODEL_URL = "https://github.com/shanjathurshan/handwritten-character-recognition/releases/download/v1.0/my_model.h5"
 LOCAL_MODEL_PATH = "/tmp/my_model.h5"  # Railway uses /tmp for temp storage
 
-# 🔥 Download the model from GitHub if it does not exist locally
+# ✅ Check if the model exists before downloading (to prevent double loading)
 if not os.path.exists(LOCAL_MODEL_PATH):
     print("Downloading model from GitHub...")
     response = requests.get(GITHUB_MODEL_URL)
     with open(LOCAL_MODEL_PATH, "wb") as f:
         f.write(response.content)
 
-# 🔥 Load the TensorFlow model
+# ✅ Load TensorFlow model once (for all Gunicorn workers)
 print("Loading model...")
 model = tf.keras.models.load_model(LOCAL_MODEL_PATH)
 print("Model loaded successfully!")
 
-# 🔥 Initialize Flask
+# ✅ Initialize Flask
 app = Flask(__name__)
 
-# 🔥 Preprocessing Function (Resizes image to match model input)
+# ✅ Image Preprocessing Function
 def preprocess_image(image):
     img = cv2.imdecode(np.frombuffer(image.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
     img = cv2.resize(img, (28, 28))  # Resize to match model input
@@ -37,7 +37,7 @@ def preprocess_image(image):
     img = img.reshape(1, 28, 28, 1)
     return img
 
-# 🔥 Flask Route to Handle Predictions
+# ✅ Prediction Route
 @app.route("/predict", methods=["POST"])
 def predict():
     if "file" not in request.files:
@@ -46,7 +46,6 @@ def predict():
     file = request.files["file"]
     img = preprocess_image(file)
 
-    # Make prediction
     predictions = model.predict(img)
     predicted_class = np.argmax(predictions)
     confidence = float(predictions[0][predicted_class]) * 100  # Convert to %
@@ -58,6 +57,6 @@ def predict():
 
     return jsonify(response)
 
-# 🔥 Run Flask App
+# ✅ Run Flask App
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
